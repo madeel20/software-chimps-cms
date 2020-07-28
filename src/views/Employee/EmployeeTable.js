@@ -15,15 +15,61 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import EditEmployee from './EditEmployee/EditEmployee';
+import Modal from '@material-ui/core/Modal';
+import Backdrop from '@material-ui/core/Backdrop';
+import Fade from '@material-ui/core/Fade';
 // core components
 import styles from "assets/jss/material-dashboard-react/components/tableStyle.js";
+const useStyles1 = makeStyles((theme) => ({
+  cardCategoryWhite: {
+    "&,& a,& a:hover,& a:focus": {
+      color: "rgba(255,255,255,.62)",
+      margin: "0",
+      fontSize: "14px",
+      marginTop: "0",
+      marginBottom: "0"
+    },
+    "& a,& a:hover,& a:focus": {
+      color: "#FFFFFF"
+    }
+  },
+  modal: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  paper: {
+    backgroundColor: theme.palette.background.paper,
+    border: '2px solid #000',
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
+  },
+  cardTitleWhite: {
+    color: "#FFFFFF",
+    marginTop: "0px",
+    minHeight: "auto",
+    fontWeight: "300",
+    fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
+    marginBottom: "3px",
+    textDecoration: "none",
+    "& small": {
+      color: "#777",
+      fontSize: "65%",
+      fontWeight: "400",
+      lineHeight: "1"
+    }
+  }
+}));
 
 const useStyles = makeStyles(styles);
 
 export default function CustomTable(props) {
   const classes = useStyles();
+  const classes1 = useStyles1();
   const { tableHead, tableData, tableHeaderColor } = props;
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false)
+  const [openEdit, setOpenEdit] = React.useState(false);
   const handleOpen = () => {
     setOpen(true);
   };
@@ -31,8 +77,33 @@ export default function CustomTable(props) {
   const handleClose = () => {
     setOpen(false);
   };
+  const handleOpenEdit = () => {
+    setOpenEdit(true);
+  };
+
+  const handleCloseEdit = () => {
+    setOpenEdit(false);
+  };
   return (
     <div className={classes.tableResponsive}>
+       <Modal
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+        className={classes1.modal}
+        open={openEdit}
+        onClose={handleClose}
+        closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+          timeout: 500,
+        }}
+      >
+        <Fade in={openEdit}>
+          <div className={classes1.paper}>
+           <EditEmployee onCancelClick={handleCloseEdit} />
+          </div>
+        </Fade>
+      </Modal>
       <Dialog
         open={open}
         onClose={handleClose}
@@ -83,7 +154,7 @@ export default function CustomTable(props) {
                   );
                 })}
                 <TableCell className={classes.tableCell} key={key}>
-                  <Button color="">
+                  <Button onClick={handleOpenEdit} color="">
                     <EditIcon />
                   </Button>
                   <Button onClick={handleOpen} color="secondary">
