@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useContext} from "react";
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
 // core components
@@ -13,6 +13,7 @@ import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
 import AddEmployee from './AddEmployee/EmployeeProfile'
+import {EmployeeContext} from '../../context/employee/state'
 const useStyles = makeStyles((theme) => ({
   cardCategoryWhite: {
     "&,& a,& a:hover,& a:focus": {
@@ -56,8 +57,9 @@ const useStyles = makeStyles((theme) => ({
 
 export default function EmployeeList() {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(false);
-
+  const {employees}  = useContext(EmployeeContext)
+  const [open, setOpen] = React.useState(false); 
+  console.log(employees)
   const handleOpen = () => {
     setOpen(true);
   };
@@ -105,15 +107,8 @@ export default function EmployeeList() {
           <CardBody>
             <Table
               tableHeaderColor="primary"
-              tableHead={["Name", "Hire Date", "Job Title", "Salary"]}
-              tableData={[
-                ["Dakota Rice", "Niger", "Oud-Turnhout", "$36,738"],
-                ["Minerva Hooper", "Curaçao", "Sinaai-Waas", "$23,789"],
-                ["Sage Rodriguez", "Netherlands", "Baileux", "$56,142"],
-                ["Philip Chaney", "Korea, South", "Overland Park", "$38,735"],
-                ["Doris Greene", "Malawi", "Feldkirchen in Kärnten", "$63,542"],
-                ["Mason Porter", "Chile", "Gloucester", "$78,615"]
-              ]}
+              tableHead={["First Name", "Last Name", "Job Title","Join Date","Salary"]}
+              tableData={employees}
             />
           </CardBody>
         </Card>

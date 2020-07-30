@@ -44,7 +44,7 @@ export default function UserProfile(props) {
         <GridItem xs={12} sm={12} md={12}>
           <Card>
             <CardHeader color="primary">
-              <h4 className={classes.cardTitleWhite}>Add Employee</h4>
+              <h4 className={classes.cardTitleWhite}>Edit Employee</h4>
               <p className={classes.cardCategoryWhite}></p>
             </CardHeader>
             <CardBody>
@@ -147,7 +147,7 @@ export default function UserProfile(props) {
               </GridContainer>
             </CardBody>
             <CardFooter>
-              <Button color="primary">Add Employee</Button>
+              <Button color="primary">Save Employee</Button>
               <Button onClick={() => props.onCancelClick()} color="">
                 Cancel
               </Button>
