@@ -94,7 +94,7 @@ export default function UserProfile(props) {
             <CardHeader color="primary">
               <h4 className={classes.cardTitleWhite}>Add Employee</h4>
             </CardHeader>
-            <CardBody>
+           
               {error !== "" && (
                 <Alert variant="filled" severity="error">
                   {error}
@@ -114,8 +114,10 @@ export default function UserProfile(props) {
                   </GridItem>
                 </GridContainer>
               )}
+               
               {!isLoading && (
                 <div>
+                  <CardBody>
                   <GridContainer>
                     <GridItem xs={12} sm={12} md={6}>
                       <CustomInput
@@ -203,8 +205,7 @@ export default function UserProfile(props) {
                       />
                     </GridItem>
                   </GridContainer>
-                </div>
-              )}
+                
             </CardBody>
             <CardFooter>
               <Button onClick={() => onAdd()} color="primary">
@@ -214,6 +215,8 @@ export default function UserProfile(props) {
                 Cancel
               </Button>
             </CardFooter>
+            </div>
+            )}
           </Card>
         </GridItem>
         {/* <GridItem xs={12} sm={12} md={4}>
