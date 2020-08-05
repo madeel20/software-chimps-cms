@@ -9,7 +9,6 @@ import CustomInput from "components/CustomInput/CustomInput.js";
 import Button from "components/CustomButtons/Button.js";
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
-import CardAvatar from "components/Card/CardAvatar.js";
 import CardBody from "components/Card/CardBody.js";
 import CardFooter from "components/Card/CardFooter.js";
 import { employeesRef } from "../../../firebase/index";
@@ -41,50 +40,63 @@ export default function UserProfile(props) {
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [firstName, setFirstName] = useState("");
-  console.log(firstName);
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [salary, setSalary] = useState("");
   const [joinDate, setJoinDate] = useState(today());
   const [jobTitle, setJobTitle] = useState("");
   const onAdd = () => {
-    if(firstName==='' || lastName==='' || email==='' || salary==='' || joinDate==='' || jobTitle===''){
-      setError('Fill All the Fields!');
+    if (
+      firstName === "" ||
+      lastName === "" ||
+      email === "" ||
+      salary === "" ||
+      joinDate === "" ||
+      jobTitle === ""
+    ) {
+      setError("Fill All the Fields!");
       return;
     }
     setLoading(true);
     //check if employee with same exists or not
-    employeesRef.where('email','==',email).get().then(res=>{
-      if (res.docs.length > 0) {
-        setError('Employee with same email already exist!');
-        setLoading(false);
+    employeesRef
+      .where("email", "==", email)
+      .get()
+      .then((res) => {
+        if (res.docs.length > 0) {
+          setError("Employee with same email already exist!");
+          setLoading(false);
           return;
-      }
-      employeesRef
-      .add({
-        firstName,
-        lastName,
-        email,
-        salary,
-        joinDate,
-        jobTitle,
-      })
-      .then(() => {
-        setEmail('');setFirstName('');setLastName('');setJobTitle('');setJoinDate('');setSalary()
-        setLoading(false);
-        props.onCancelClick();
-        props.onAdd();
+        }
+        employeesRef
+          .add({
+            firstName,
+            lastName,
+            email,
+            salary,
+            joinDate,
+            jobTitle,
+          })
+          .then(() => {
+            setEmail("");
+            setFirstName("");
+            setLastName("");
+            setJobTitle("");
+            setJoinDate("");
+            setSalary();
+            setLoading(false);
+            props.onCancelClick();
+            props.onAdd();
+          })
+          .catch((err) => {
+            setLoading(false);
+            console.log(err);
+          });
       })
       .catch((err) => {
         setLoading(false);
         console.log(err);
       });
-
-    }) .catch((err) => {
-      setLoading(false);
-      console.log(err);
-    });
-    
   };
   return (
     <div>
@@ -94,30 +106,30 @@ export default function UserProfile(props) {
             <CardHeader color="primary">
               <h4 className={classes.cardTitleWhite}>Add Employee</h4>
             </CardHeader>
-           
-              {error !== "" && (
-                <Alert variant="filled" severity="error">
-                  {error}
-                </Alert>
-              )}
-              {isLoading && (
-                <GridContainer
-                  container
-                  spacing={3}
-                  direction="column"
-                  alignItems="center"
-                  justify="center"
-                  style={{ minHeight: "50vh", minWidth: "100%" }}
-                >
-                  <GridItem item xs={12} sm={12} md={12}>
-                    <CircularProgress />
-                  </GridItem>
-                </GridContainer>
-              )}
-               
-              {!isLoading && (
-                <div>
-                  <CardBody>
+
+            {error !== "" && (
+              <Alert variant="filled" severity="error">
+                {error}
+              </Alert>
+            )}
+            {isLoading && (
+              <GridContainer
+                container
+                spacing={3}
+                direction="column"
+                alignItems="center"
+                justify="center"
+                style={{ minHeight: "50vh", minWidth: "100%" }}
+              >
+                <GridItem item xs={12} sm={12} md={12}>
+                  <CircularProgress />
+                </GridItem>
+              </GridContainer>
+            )}
+
+            {!isLoading && (
+              <div>
+                <CardBody>
                   <GridContainer>
                     <GridItem xs={12} sm={12} md={6}>
                       <CustomInput
@@ -205,17 +217,16 @@ export default function UserProfile(props) {
                       />
                     </GridItem>
                   </GridContainer>
-                
-            </CardBody>
-            <CardFooter>
-              <Button onClick={() => onAdd()} color="primary">
-                Add Employee
-              </Button>
-              <Button onClick={() => props.onCancelClick()} color="">
-                Cancel
-              </Button>
-            </CardFooter>
-            </div>
+                </CardBody>
+                <CardFooter>
+                  <Button onClick={() => onAdd()} color="primary">
+                    Add Employee
+                  </Button>
+                  <Button onClick={() => props.onCancelClick()} color="">
+                    Cancel
+                  </Button>
+                </CardFooter>
+              </div>
             )}
           </Card>
         </GridItem>

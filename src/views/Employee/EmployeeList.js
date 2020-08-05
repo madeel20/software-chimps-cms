@@ -201,6 +201,9 @@ export default function EmployeeList() {
                 ]}
                 tableData={employees}
                 onEmployeeDelete={onEmployeeDelete}
+                onEdit={() => {
+                  onAddition()
+                }}
               />
             )}
           </CardBody>

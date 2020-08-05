@@ -101,7 +101,9 @@ export default function CustomTable(props) {
       >
         <Fade in={openEdit}>
           <div className={classes1.paper}>
-           <EditEmployee onCancelClick={handleCloseEdit} />
+           <EditEmployee onEdit={() => {
+                props.onEdit()
+              }} id={id} onCancelClick={handleCloseEdit} />
           </div>
         </Fade>
       </Modal>
@@ -167,7 +169,7 @@ export default function CustomTable(props) {
                       Rs {row.data().salary} /-
                     </TableCell>
                 <TableCell className={classes.tableCell}>
-                  <Button onClick={handleOpenEdit} color="">
+                  <Button onClick={()=>{setId(row.id);handleOpenEdit()}} color="">
                     <EditIcon />
                   </Button>
                   <Button onClick={()=> {setId(row.id);handleOpen();}} color="secondary">
