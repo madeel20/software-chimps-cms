@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -12,9 +12,9 @@ import CardHeader from "components/Card/CardHeader.js";
 import CardAvatar from "components/Card/CardAvatar.js";
 import CardBody from "components/Card/CardBody.js";
 import CardFooter from "components/Card/CardFooter.js";
-
-import avatar from "assets/img/faces/marc.jpg";
-
+import { employeesRef } from "../../../firebase/index";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import Alert from "@material-ui/lab/Alert";
 const styles = {
   cardCategoryWhite: {
     color: "rgba(255,255,255,.62)",
@@ -38,6 +38,54 @@ const useStyles = makeStyles(styles);
 
 export default function UserProfile(props) {
   const classes = useStyles();
+  const [isLoading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [firstName, setFirstName] = useState("");
+  console.log(firstName);
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [salary, setSalary] = useState("");
+  const [joinDate, setJoinDate] = useState(today());
+  const [jobTitle, setJobTitle] = useState("");
+  const onAdd = () => {
+    if(firstName==='' || lastName==='' || email==='' || salary==='' || joinDate==='' || jobTitle===''){
+      setError('Fill All the Fields!');
+      return;
+    }
+    setLoading(true);
+    //check if employee with same exists or not
+    employeesRef.where('email','==',email).get().then(res=>{
+      if (res.docs.length > 0) {
+        setError('Employee with same email already exist!');
+        setLoading(false);
+          return;
+      }
+      employeesRef
+      .add({
+        firstName,
+        lastName,
+        email,
+        salary,
+        joinDate,
+        jobTitle,
+      })
+      .then(() => {
+        setEmail('');setFirstName('');setLastName('');setJobTitle('');setJoinDate('');setSalary()
+        setLoading(false);
+        props.onCancelClick();
+        props.onAdd();
+      })
+      .catch((err) => {
+        setLoading(false);
+        console.log(err);
+      });
+
+    }) .catch((err) => {
+      setLoading(false);
+      console.log(err);
+    });
+    
+  };
   return (
     <div>
       <GridContainer>
@@ -45,109 +93,123 @@ export default function UserProfile(props) {
           <Card>
             <CardHeader color="primary">
               <h4 className={classes.cardTitleWhite}>Add Employee</h4>
-              <p className={classes.cardCategoryWhite}></p>
             </CardHeader>
             <CardBody>
-              <GridContainer>
-                <GridItem xs={12} sm={12} md={5}>
-                  <CustomInput
-                    labelText="Company (disabled)"
-                    id="company-disabled"
-                    formControlProps={{
-                      fullWidth: true,
-                    }}
-                    inputProps={{
-                      disabled: true,
-                    }}
-                  />
-                </GridItem>
-                <GridItem xs={12} sm={12} md={3}>
-                  <CustomInput
-                    labelText="Username"
-                    id="username"
-                    formControlProps={{
-                      fullWidth: true,
-                    }}
-                  />
-                </GridItem>
-                <GridItem xs={12} sm={12} md={4}>
-                  <CustomInput
-                    labelText="Email address"
-                    id="email-address"
-                    formControlProps={{
-                      fullWidth: true,
-                    }}
-                  />
-                </GridItem>
-              </GridContainer>
-              <GridContainer>
-                <GridItem xs={12} sm={12} md={6}>
-                  <CustomInput
-                    labelText="First Name"
-                    id="first-name"
-                    formControlProps={{
-                      fullWidth: true,
-                    }}
-                  />
-                </GridItem>
-                <GridItem xs={12} sm={12} md={6}>
-                  <CustomInput
-                    labelText="Last Name"
-                    id="last-name"
-                    formControlProps={{
-                      fullWidth: true,
-                    }}
-                  />
-                </GridItem>
-              </GridContainer>
-              <GridContainer>
-                <GridItem xs={12} sm={12} md={4}>
-                  <CustomInput
-                    labelText="City"
-                    id="city"
-                    formControlProps={{
-                      fullWidth: true,
-                    }}
-                  />
-                </GridItem>
-                <GridItem xs={12} sm={12} md={4}>
-                  <CustomInput
-                    labelText="Country"
-                    id="country"
-                    formControlProps={{
-                      fullWidth: true,
-                    }}
-                  />
-                </GridItem>
-                <GridItem xs={12} sm={12} md={4}>
-                  <CustomInput
-                    labelText="Postal kkk Code"
-                    id="postal-code"
-                    formControlProps={{
-                      fullWidth: true,
-                    }}
-                  />
-                </GridItem>
-              </GridContainer>
-              <GridContainer>
-                <GridItem xs={12} sm={12} md={12}>
-                  <InputLabel style={{ color: "#AAAAAA" }}>About me</InputLabel>
-                  <CustomInput
-                    labelText="Lamborghini Mercy, Your chick she so thirsty, I'm in that two seat Lambo."
-                    id="about-me"
-                    formControlProps={{
-                      fullWidth: true,
-                    }}
-                    inputProps={{
-                      multiline: true,
-                      rows: 5,
-                    }}
-                  />
-                </GridItem>
-              </GridContainer>
+              {error !== "" && (
+                <Alert variant="filled" severity="error">
+                  {error}
+                </Alert>
+              )}
+              {isLoading && (
+                <GridContainer
+                  container
+                  spacing={3}
+                  direction="column"
+                  alignItems="center"
+                  justify="center"
+                  style={{ minHeight: "50vh", minWidth: "100%" }}
+                >
+                  <GridItem item xs={12} sm={12} md={12}>
+                    <CircularProgress />
+                  </GridItem>
+                </GridContainer>
+              )}
+              {!isLoading && (
+                <div>
+                  <GridContainer>
+                    <GridItem xs={12} sm={12} md={6}>
+                      <CustomInput
+                        labelText="First Name"
+                        id="first-name"
+                        formControlProps={{
+                          fullWidth: true,
+                        }}
+                        inputProps={{
+                          value: firstName,
+                          onChange: (e) => setFirstName(e.target.value),
+                        }}
+                      />
+                    </GridItem>
+                    <GridItem xs={12} sm={12} md={6}>
+                      <CustomInput
+                        labelText="Last Name"
+                        id="last-name"
+                        formControlProps={{
+                          fullWidth: true,
+                        }}
+                        inputProps={{
+                          value: lastName,
+                          onChange: (e) => setLastName(e.target.value),
+                        }}
+                      />
+                    </GridItem>
+                  </GridContainer>
+                  <GridContainer>
+                    <GridItem xs={12} sm={12} md={6}>
+                      <CustomInput
+                        labelText="Email address"
+                        id="email-address"
+                        formControlProps={{
+                          fullWidth: true,
+                        }}
+                        inputProps={{
+                          value: email,
+                          type: "email",
+                          onChange: (e) => setEmail(e.target.value),
+                        }}
+                      />
+                    </GridItem>
+                    <GridItem xs={12} sm={12} md={6}>
+                      <CustomInput
+                        labelText="Job Title"
+                        id="job-title"
+                        formControlProps={{
+                          fullWidth: true,
+                        }}
+                        inputProps={{
+                          value: jobTitle,
+                          onChange: (e) => setJobTitle(e.target.value),
+                        }}
+                      />
+                    </GridItem>
+                  </GridContainer>
+                  <GridContainer>
+                    <GridItem xs={12} sm={12} md={6}>
+                      <CustomInput
+                        labelText="Joint Date"
+                        id="join-date"
+                        formControlProps={{
+                          fullWidth: true,
+                        }}
+                        inputProps={{
+                          value: joinDate,
+                          onChange: (e) => setJoinDate(e.target.value),
+                          type: "date",
+                        }}
+                      />
+                    </GridItem>
+                    <GridItem xs={12} sm={12} md={6}>
+                      <CustomInput
+                        labelText="Salary "
+                        id="salary"
+                        formControlProps={{
+                          fullWidth: true,
+                        }}
+                        inputProps={{
+                          value: salary,
+                          onChange: (e) => setSalary(e.target.value),
+                          type: "number",
+                        }}
+                      />
+                    </GridItem>
+                  </GridContainer>
+                </div>
+              )}
             </CardBody>
             <CardFooter>
-              <Button color="primary">Add Employee</Button>
+              <Button onClick={() => onAdd()} color="primary">
+                Add Employee
+              </Button>
               <Button onClick={() => props.onCancelClick()} color="">
                 Cancel
               </Button>
@@ -177,5 +239,18 @@ export default function UserProfile(props) {
         </GridItem> */}
       </GridContainer>
     </div>
+  );
+}
+function today() {
+  let d = new Date();
+  let currDate = d.getDate();
+  let currMonth = d.getMonth() + 1;
+  let currYear = d.getFullYear();
+  return (
+    currYear +
+    "-" +
+    (currMonth < 10 ? "0" + currMonth : currMonth) +
+    "-" +
+    (currDate < 10 ? "0" + currDate : currDate)
   );
 }

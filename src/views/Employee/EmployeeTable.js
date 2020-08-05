@@ -68,6 +68,7 @@ export default function CustomTable(props) {
   const classes = useStyles();
   const classes1 = useStyles1();
   const { tableHead, tableData, tableHeaderColor } = props;
+  const [id,setId] = React.useState('')
   const [open, setOpen] = React.useState(false)
   const [openEdit, setOpenEdit] = React.useState(false);
   const handleOpen = () => {
@@ -120,7 +121,7 @@ export default function CustomTable(props) {
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleClose} color="primary" autoFocus>
+          <Button onClick={()=>{ handleClose();props.onEmployeeDelete(id); setId(''); }} color="primary" autoFocus>
             Confirm
           </Button>
         </DialogActions>
@@ -143,21 +144,33 @@ export default function CustomTable(props) {
           </TableHead>
         ) : null}
         <TableBody>
-          {tableData.map((prop, key) => {
+          {tableData.map(row => {
             return (
-              <TableRow key={key} className={classes.tableBodyRow}>
-                {prop.map((prop, key) => {
-                  return (
-                    <TableCell className={classes.tableCell} key={key}>
-                      {prop}
+              <TableRow key={row.id} className={classes.tableBodyRow}>
+        
+        <TableCell className={classes.tableCell}>
+                      {row.data().firstName}
                     </TableCell>
-                  );
-                })}
-                <TableCell className={classes.tableCell} key={key}>
+                    <TableCell className={classes.tableCell}>
+                      {row.data().lastName}
+                    </TableCell>
+                    <TableCell className={classes.tableCell}>
+                      {row.data().email}
+                    </TableCell>
+                    <TableCell className={classes.tableCell}>
+                      {row.data().jobTitle}
+                    </TableCell>
+                    <TableCell className={classes.tableCell}>
+                      {row.data().joinDate}
+                    </TableCell>
+                    <TableCell className={classes.tableCell}>
+                      Rs {row.data().salary} /-
+                    </TableCell>
+                <TableCell className={classes.tableCell}>
                   <Button onClick={handleOpenEdit} color="">
                     <EditIcon />
                   </Button>
-                  <Button onClick={handleOpen} color="secondary">
+                  <Button onClick={()=> {setId(row.id);handleOpen();}} color="secondary">
                     <DeleteIcon />
                   </Button>
                 </TableCell>

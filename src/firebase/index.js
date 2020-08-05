@@ -11,3 +11,4 @@ var firebaseConfig = {
   // Initialize Firebase
   const Firebase = firebase.initializeApp(firebaseConfig);
   export default Firebase;
+  export const employeesRef = Firebase.firestore().collection('Employees')

@@ -1,4 +1,4 @@
-import React,{useContext} from "react";
+import React, { useContext, useState, useEffect } from "react";
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
 // core components
@@ -8,12 +8,13 @@ import Table from "./EmployeeTable";
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
-import Button from  "components/CustomButtons/Button.js";
-import Modal from '@material-ui/core/Modal';
-import Backdrop from '@material-ui/core/Backdrop';
-import Fade from '@material-ui/core/Fade';
-import AddEmployee from './AddEmployee/EmployeeProfile'
-import {EmployeeContext} from '../../context/employee/state'
+import Button from "components/CustomButtons/Button.js";
+import Modal from "@material-ui/core/Modal";
+import Backdrop from "@material-ui/core/Backdrop";
+import Fade from "@material-ui/core/Fade";
+import AddEmployee from "./AddEmployee/EmployeeProfile";
+import { employeesRef } from "../../firebase/index";
+import CircularProgress from "@material-ui/core/CircularProgress";
 const useStyles = makeStyles((theme) => ({
   cardCategoryWhite: {
     "&,& a,& a:hover,& a:focus": {
@@ -21,20 +22,20 @@ const useStyles = makeStyles((theme) => ({
       margin: "0",
       fontSize: "14px",
       marginTop: "0",
-      marginBottom: "0"
+      marginBottom: "0",
     },
     "& a,& a:hover,& a:focus": {
-      color: "#FFFFFF"
-    }
+      color: "#FFFFFF",
+    },
   },
   modal: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
   paper: {
     backgroundColor: theme.palette.background.paper,
-    border: '2px solid #000',
+    border: "2px solid #000",
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
   },
@@ -50,26 +51,90 @@ const useStyles = makeStyles((theme) => ({
       color: "#777",
       fontSize: "65%",
       fontWeight: "400",
-      lineHeight: "1"
-    }
-  }
+      lineHeight: "1",
+    },
+  },
 }));
 
 export default function EmployeeList() {
   const classes = useStyles();
-  const {employees}  = useContext(EmployeeContext)
-  const [open, setOpen] = React.useState(false); 
-  console.log(employees)
+  const [employees, setEmployee] = useState([
+    // {
+    //   firstname: "Adeel",
+    //   lastname: "Khan",
+    //   email: "aliadeel20@gmail.com",
+    //   salary: "9000",
+    //   joindate: "22-2-2019",
+    //   jobtitle: "web dev",
+    // },
+    // {
+    //   firstname: "Adeel",
+    //   lastname: "Khan",
+    //   email: "aliadeel20@gmail.com",
+    //   salary: "9000",
+    //   joindate: "22-2-2019",
+    //   jobtitle: "web dev",
+    // },
+    // {
+    //   firstname: "Adeel",
+    //   lastname: "Khan",
+    //   email: "aliadeel20@gmail.com",
+    //   salary: "9000",
+    //   joindate: "22-2-2019",
+    //   jobtitle: "web dev",
+    // },
+    // {
+    //   firstname: "Adeel",
+    //   lastname: "Khan",
+    //   email: "aliadeel20@gmail.com",
+    //   salary: "9000",
+    //   joindate: "22-2-2019",
+    //   jobtitle: "web dev",
+    // },
+  ]);
+  const [isLoading, setLoading] = useState(true);
+  const [open, setOpen] = useState(false);
+  console.log(employees);
+  useEffect(() => {
+    employeesRef
+      .get()
+      .then((res) => {
+        setEmployee(res.docs);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
+  }, []);
+  const onEmployeeDelete = id=>{
+    setLoading(true)
+    employeesRef.doc(id).delete().then(res=>{
+      onAddition();
+     
+    }).catch(res=>{setLoading(false);console.log(res)})
+  }
+  const onAddition = () => {
+    employeesRef
+      .get()
+      .then((res) => {
+        setEmployee(res.docs);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
+  };
   const handleOpen = () => {
     setOpen(true);
   };
-
   const handleClose = () => {
     setOpen(false);
   };
   return (
     <GridContainer>
-        <Modal
+      <Modal
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
         className={classes.modal}
@@ -83,37 +148,65 @@ export default function EmployeeList() {
       >
         <Fade in={open}>
           <div className={classes.paper}>
-           <AddEmployee onCancelClick={handleClose} />
+            <AddEmployee
+              onAdd={() => {
+                onAddition()
+              }}
+              onCancelClick={handleClose}
+            />
           </div>
         </Fade>
       </Modal>
-      <GridItem  md={12}>
+      <GridItem md={12}>
         <Card>
           <CardHeader color="primary">
-          <GridContainer>
-          <GridItem  md={9}>
-            <h4 className={classes.cardTitleWhite}>All Employee</h4>
-            <p className={classes.cardCategoryWhite}>
-              
-            </p>
-            </GridItem>
-            <GridItem  md={3}>
-            <Button onClick={handleOpen}  color="info" round>
-            <i class="material-icons">add</i> Add Employee
-              </Button>
+            <GridContainer alignItems="center">
+              <GridItem md={9}>
+                <h4 className={classes.cardTitleWhite}>All Employee</h4>
+                <p className={classes.cardCategoryWhite}></p>
               </GridItem>
-              </GridContainer>
+              <GridItem md={3}>
+                <Button onClick={handleOpen} color="info" round>
+                  <i class="material-icons">add</i> Add Employee
+                </Button>
+              </GridItem>
+            </GridContainer>
           </CardHeader>
           <CardBody>
-            <Table
-              tableHeaderColor="primary"
-              tableHead={["First Name", "Last Name", "Job Title","Join Date","Salary"]}
-              tableData={employees}
-            />
+            {isLoading && (
+              <GridContainer
+                container
+                spacing={0}
+                direction="column"
+                alignItems="center"
+                justify="center"
+                style={{ minHeight: "50vh" }}
+              >
+                <GridItem item xs={3}>
+                  <CircularProgress />
+                </GridItem>
+              </GridContainer>
+            )}
+
+            {employees.length > 0 && !isLoading &&  (
+              <Table
+                tableHeaderColor="primary"
+                tableHead={[
+                  "First Name",
+                  "Last Name",
+                  "Email",
+                  "Job Title",
+                  "Join Date",
+                  "Salary",
+                ]}
+                tableData={employees}
+                onEmployeeDelete={onEmployeeDelete}
+              />
+            )}
           </CardBody>
         </Card>
       </GridItem>
-     
+
       {/* <GridItem xs={12} sm={12} md={12}>
         <Card plain>
           <CardHeader plain color="primary">
