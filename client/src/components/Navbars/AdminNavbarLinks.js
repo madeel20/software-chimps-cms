@@ -10,6 +10,7 @@ import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import Hidden from "@material-ui/core/Hidden";
 import Poppers from "@material-ui/core/Popper";
 import Divider from "@material-ui/core/Divider";
+import firebase from '../../firebase';
 // @material-ui/icons
 import Person from "@material-ui/icons/Person";
 import Notifications from "@material-ui/icons/Notifications";
@@ -209,6 +210,13 @@ export default function AdminNavbarLinks() {
                     <MenuItem
                       onClick={handleCloseProfile}
                       className={classes.dropdownItem}
+                      onClickCapture={()=>{firebase.auth().signOut()
+                        .then(function() {
+                          window.location='/'
+                        })
+                        .catch(function(error) {
+                          // An error happened
+                        });}}
                     >
                       Logout
                     </MenuItem>

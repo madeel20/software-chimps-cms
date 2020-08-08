@@ -13,7 +13,7 @@ import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
 import AddEmployee from "./AddEmployee/EmployeeProfile";
-import { employeesRef } from "../../firebase/index";
+import { employeesRef } from "../../../firebase/index";
 import CircularProgress from "@material-ui/core/CircularProgress";
 const useStyles = makeStyles((theme) => ({
   cardCategoryWhite: {
